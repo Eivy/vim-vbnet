@@ -1,93 +1,126 @@
 " Vim indent file
 " Language   : VisualBasic.NET
-" Maintainers: OGURA Daiki
-" Last Change: 2013-01-25
+" Author: OGURA Daiki
+" Maintainers: Eivy <modern.times.rock.and.roll+git@gmail.com>
 
-if exists("b:did_indent")
-  finish
-endif
+if exists("b:did_indent") | finish | endif
 let b:did_indent = 1
 
 setlocal autoindent
-setlocal expandtab
-setlocal tabstop<
-setlocal softtabstop=4
-setlocal shiftwidth=4
-
 setlocal indentexpr=VbNetGetIndent(v:lnum)
-setlocal indentkeys=!^F,o,O,0=~?catch,0=~?else,0=~?elseif,0=~?end,0=~?next,0=~?end,<:>
+setlocal indentkeys+==~else,=~elseif,=~if,=~try,=~end\ ,=~wend,=~case,=~next,=~select,=~loop,=~catch,=~finally,=~next,<:>,{:},(:)
 
-" Only define the function once.
-if exists("*VbNetGetIndent")
-  finish
-endif
 let s:keepcpo= &cpo
 set cpo&vim
 
-function VbNetGetIndent(lnum)
-  let plnum = prevnonblank(v:lnum - 1)
-  let ind = indent(plnum)
+fun! VbNetGetIndent(lnum)
+    if a:lnum == 0 | return 0 | endif
+    let plnum = prevnonblank(a:lnum - 1)
+    let ind = indent(plnum)
 
-  let access_modifier = '\<\(Public\|Protected\|Private\|Friend\)\>'
+    let this_line = getline(a:lnum)
+    let keyword =  '^\s*\%(<.*>\s*\)*\%(\<\%(Public\|Protected\|Private\|Friend\|Overrides\|Overridable\|Overloads\|NotOverridable\|MustOverride\|Shadows\|Shared\|ReadOnly\|WriteOnly\)\>\s*\)*\<\%(Sub\|Function\|Module\|Class\|Enum\|Interface\|Operator\|Namespace\|Property\|Get\|Set\|Structure\)\>'
 
-  let previous_line = getline(a:lnum - 1)
-  if previous_line =~ '\s_$' || previous_line =~ ',$' || previous_line =~ '^\s*\.'
-    return ind
-  elseif previous_line =~ '{$' || previous_line =~ '($' || previous_line =~ '=$'
-    return ind + &l:shiftwidth
-  elseif previous_line =~? '^'.access_modifier || previous_line =~? '^Namespace'
-    return ind + &l:shiftwidth
-  elseif previous_line =~? '^\s*'.access_modifier.'\s\(\Class\|Module\|Enum\|Interface\|Operator\)'
-    return ind + &l:shiftwidth
-  elseif previous_line =~? '\<\(Overrides\|Overridable\|Overloads\|NotOverridable\|MustOverride\|Shadows\|Shared\|ReadOnly\|WriteOnly\)\>'
-    return ind + &l:shiftwidth
-  endif
+    " labels and preprocessor get zero indent immediately
+    let LABELS_OR_PREPROC = '^\s*\<\k\+\>:\s*$\|^\s*#'
+    if this_line =~? LABELS_OR_PREPROC | return 0 | endif
 
-  if previous_line =~? 'Then$'
-    return ind + &l:shiftwidth
-  elseif previous_line =~? '^\s*\<\(Select Case\|Else\|ElseIf\|For\|While\|Using\|Try\|Catch\|Finally\)\>'
-    return ind + &l:shiftwidth
-  elseif previous_line =~? '^\s\+}$'
-    return &l:shiftwidth + &l:shiftwidth
-  endif
+    let previous_line = getline(plnum)
+    while previous_line =~# LABELS_OR_PREPROC || previous_line =~ '^\s*'''
+        let plnum = prevnonblank(plnum - 1)
+        let previous_line = getline(plnum)
+    endwhile
+    let ind = indent(plnum)
 
-  if previous_line =~? 'End \(If\|Case\|Try\|Sub\|Function\|Class\|Operator\)$'
-    return ind
-
-  endif
-
-  " labels and preprocessor get zero indent immediately
-  let this_line = getline(a:lnum)
-  let LABELS_OR_PREPROC = '^\s*\(\<\k\+\>:\s*$\|#.*\)'
-  if this_line =~? LABELS_OR_PREPROC
-    return 0
-  endif
-
-  " Find a non-blank line above the current line.
-  " Skip over labels and preprocessor directives.
-  let lnum = a:lnum
-  while lnum > 0
-    let lnum = prevnonblank(lnum - 1)
-    let previous_line = getline(lnum)
-    if previous_line !~? LABELS_OR_PREPROC
-      let pp_line = getline(lnum - 1)
-      break
+    if previous_line =~# '^\s*[^'']\%(And\|Or\|AndAlso\|OrElse\)\s*$\| _$\|^[^'']\+[+-/\\&*,{(]\s*$\|^\s*\.$'
+        if getline(prevnonblank(plnum-1)) =~# '\%(And\|Or\|AndAlso\|OrElse\)\s*$\| _$\|^[^'']\+[+-/\\&*,{(]\s*$\|^\s*\.' || previous_line =~ '^\s*'''
+            return ind
+        else
+            return indent(a:lnum)
+        endif
     endif
-  endwhile
 
-return ind
+    while getline(plnum-1) =~# LABELS_OR_PREPROC . '\|\%(And\|Or\|AndAlso\|OrElse\)\s*$\| _$\|^[^'']\+[+-/\\&*,{(]\s*$\|^\s*\.$'
+        let plnum = plnum-1
+    endwhile
+    if getline(plnum) =~? LABELS_OR_PREPROC
+        let plnum = nextnonblank(plnum+1)
+    endif
+    let previous_line = getline(plnum)
+    let ind = indent(plnum)
+
+    if this_line =~# '^\s*End\s\+Select'
+        if previous_line =~# '^\s*<Select\>'
+            return ind
+        elseif previous_line =~# '^\s*\<Case\>'
+            return ind - &sw
+        else
+            return ind - 2 * &sw
+        endif
+    elseif this_line =~# '^\s*\<\%(Catch\|Finally\)\>'
+        if previous_line =~# '^\s*\<\%(Catch\|Try\)\>'
+            return ind
+        else
+            return ind - &sw
+        endif
+    elseif this_line =~# '^\s*End\s\+Try'
+        if previous_line =~# '^\s*\(\<Try\>\|\<Catch\>\)'
+            return ind
+        else
+            return ind - &sw
+        endif
+    elseif this_line =~# '^\s*\<End\s.\+\|^\s*\<\%(Next\|Else\|ElseIf\)\>\|^\s*[)}]'
+        if previous_line =~# keyword . '\|^\s*\<\%(If\|Else\|ElseIf\|Case\|For\|While\|Do\|Using\|Try\|Catch\|Finally\|With\|SyncLock\)\>' && previous_line !~# '^\s*\<Set\>.*='
+            if previous_line !~# '\<Then\>\s*[^''     _]'
+                return ind
+            else
+                return ind - &sw
+            endif
+        else
+            return ind - &sw
+        endif
+    elseif this_line =~# '^\s*\<Case\>'
+        if previous_line =~# '^\s*Select\s\+\%(\<Case\>\)\?'
+            return ind + &sw
+        elseif previous_line =~# '^\s*Case'
+            return ind
+        else
+            return ind - &sw
+        endif
+    elseif this_line =~# '^\s*\<\(Option\|Imports\)\>'
+        return 0
+    elseif this_line =~# '^\s*\<Loop\>'
+        return ind - &sw
+    endif
+
+    if previous_line =~# '^\s*\%(If\>\|ElseIf\>\)'
+        if previous_line !~# '\<Then\>\s*[^''     _]'
+            return ind + &sw
+        else
+            return ind
+        endif
+    elseif previous_line =~# '\<Then\>\s*\%(''.*\)*$'
+        if previous_line !~ '^\s*'''
+            return ind + &sw
+        endif
+    elseif previous_line =~# '^\s*\%(Case\|Else\|For\|While\|Do\|Using\|Try\|Catch\|Finally\|With\|SyncLock\)\>'
+        return ind + &sw
+    elseif previous_line =~# '^\s*\<Do\>\s*$'
+        return ind + &sw
+    elseif previous_line =~# '^\s*\<Select\>\s*\%(\<Case\>\)\?'
+        return ind +  &sw
+    elseif previous_line =~# keyword && previous_line !~# '^\s*\<Set\>.*='
+        return ind + &sw
+    elseif previous_line =~# '[{(=]\s*$'
+        return ind + &sw
+    endif
+
+    return ind
 endfunction
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
 
-let b:undo_indent = 'setlocal '.join([
-\   'autoindent<',
-\   'expandtab<',
-\   'indentexpr<',
-\   'indentkeys<',
-\   'shiftwidth<',
-\   'softtabstop<',
-\ ])
+let b:undo_indent = 'setlocal '.join(['autoindent<', 'indentexpr<', 'indentkeys<'])
 
 " vim:sw=2
