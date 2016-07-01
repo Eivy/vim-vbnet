@@ -12,10 +12,10 @@ setlocal com=:REM,:'
 setlocal cms='%s
 
 " NOTE the double escaping \\|
-nnoremap <buffer> <silent> <expr> [[ search('^\s*\%(\<\%(private\\|\public\\|\friend\\|\property\)\>\)\?\s\+\zs\%(function\\|sub\\|property\).*', 'bW').'G'
-vnoremap <buffer> <silent> <expr> [[ search('^\s*\%(\<\%(private\\|\public\\|\friend\\|\property\)\>\)\?\s\+\zs\%(function\\|sub\\|property\).*', 'bW').'G'
-nnoremap <buffer> <silent> <expr> ]] search('^\s*\%(\<\%(private\\|\public\\|\friend\\|\property\)\>\)\?\s\+\%(function\\|sub\\|property\).*', 'W').'G'
-vnoremap <buffer> <silent> <expr> ]] search('^\s*\%(\<\%(private\\|\public\\|\friend\\|\property\)\>\)\?\s\+\%(function\\|sub\\|property\).*', 'W').'G'
+nnoremap <buffer> <silent> <expr> [[ search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\zs\%(function\\|sub\\|property\).*', 'bW').'G'
+vnoremap <buffer> <silent> <expr> [[ search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\zs\%(function\\|sub\\|property\).*', 'bW').'G'
+nnoremap <buffer> <silent> <expr> ]] search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\%(function\\|sub\\|property\).*', 'W').'G'
+vnoremap <buffer> <silent> <expr> ]] search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\%(function\\|sub\\|property\).*', 'W').'G'
 
 nnoremap <buffer> <silent> <expr> [] search('^\s*\<end\>\s\+\zs\%(function\\|sub\\|property\)', 'bW').'G'
 vnoremap <buffer> <silent> <expr> [] search('^\s*\<end\>\s\+\zs\%(function\\|sub\\|property\)', 'bW').'G'
