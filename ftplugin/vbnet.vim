@@ -12,15 +12,15 @@ setlocal com=:REM,:'
 setlocal cms='%s
 
 " NOTE the double escaping \\|
-nnoremap <buffer> <silent> <expr> [[ search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\zs\%(function\\|sub\\|property\).*', 'bW').'G'
-vnoremap <buffer> <silent> <expr> [[ search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\zs\%(function\\|sub\\|property\).*', 'bW').'G'
-nnoremap <buffer> <silent> <expr> ]] search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\%(function\\|sub\\|property\).*', 'W').'G'
-vnoremap <buffer> <silent> <expr> ]] search('^\s*\%(\%(private\\|\public\\|\friend\\|\property\)\)\?\s\+\%(function\\|sub\\|property\).*', 'W').'G'
+nnoremap <buffer> <silent> [[ :call search('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'bW')<CR>
+vnoremap <buffer> <silent> [[ :call search('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'bW')<CR>
+nnoremap <buffer> <silent> ]] :call search('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'W')<CR>
+vnoremap <buffer> <silent> ]] :call search('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'W')<CR>
 
-nnoremap <buffer> <silent> <expr> [] search('^\s*\<end\>\s\+\zs\%(function\\|sub\\|property\)', 'bW').'G'
-vnoremap <buffer> <silent> <expr> [] search('^\s*\<end\>\s\+\zs\%(function\\|sub\\|property\)', 'bW').'G'
-nnoremap <buffer> <silent> <expr> ][ search('^\s*\<end\>\s\+\%(function\\|sub\\|property\)', 'W').'G'
-vnoremap <buffer> <silent> <expr> ][ search('^\s*\<end\>\s\+\%(function\\|sub\\|property\)', 'W').'G'
+nnoremap <buffer> <silent> [] :call search('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'bW')<CR>
+vnoremap <buffer> <silent> [] :call search('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'bW')<CR>
+nnoremap <buffer> <silent> ][ :call search('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'W')<CR>
+vnoremap <buffer> <silent> ][ :call search('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'W')<CR>
 
 nnoremap <buffer> <silent> - :execute 'e ' . vbnet#switch()<CR>
 
