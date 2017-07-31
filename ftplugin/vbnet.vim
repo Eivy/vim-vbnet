@@ -12,19 +12,19 @@ setlocal com=:REM,:'
 setlocal cms='%s
 
 " NOTE the double escaping \\|
-nnoremap <buffer> <silent> <expr> [[ VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'bW')
-vnoremap <buffer> <silent> <expr> [[ VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'bW')
-nnoremap <buffer> <silent> <expr> ]] VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'W')
-vnoremap <buffer> <silent> <expr> ]] VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'W')
+nnoremap <buffer> <silent> <expr> [[ <SID>VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'bW')
+vnoremap <buffer> <silent> <expr> [[ <SID>VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'bW')
+nnoremap <buffer> <silent> <expr> ]] <SID>VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'W')
+vnoremap <buffer> <silent> <expr> ]] <SID>VbSearch('^\s*\zs\%(\%(private\\|\public\\|\friend\\|\property\)\s\+\)\?\%(function\\|sub\\|property\\|type\).*', 'W')
 
-nnoremap <buffer> <silent> <expr> [] VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'bW')
-vnoremap <buffer> <silent> <expr> [] VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'bW')
-nnoremap <buffer> <silent> <expr> ][ VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'W')
-vnoremap <buffer> <silent> <expr> ][ VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'W')
+nnoremap <buffer> <silent> <expr> [] <SID>VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'bW')
+vnoremap <buffer> <silent> <expr> [] <SID>VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'bW')
+nnoremap <buffer> <silent> <expr> ][ <SID>VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'W')
+vnoremap <buffer> <silent> <expr> ][ <SID>VbSearch('^\s*\zs\<end\>\s\+\%(function\\|sub\\|property\\|type\)', 'W')
 
 nnoremap <buffer> <silent> - :execute 'e ' . vbnet#switch()<CR>
 
-fun! VbSearch(str, flg)
+fun! s:VbSearch(str, flg)
 	let s:a = search(a:str, a:flg)
 	if s:a != 0
 		return s:a.'G'
