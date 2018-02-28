@@ -4,6 +4,32 @@ let b:did_ftplugin = 1
 let s:keepcpo = &cpo
 set cpo&vim
 
+try
+	call textobj#user#plugin('vbnet', {
+	\	'if-condition': {
+	\		'pattern': ['If ', ' Then'],
+	\		'select-a': 'ac',
+	\		'select-i': 'ic',
+	\	},
+	\	'if': {
+	\		'pattern': ['^\s*If .* Then\r\?\n', '^\s*End If'],
+	\		'select-a': 'ai',
+	\		'select-i': 'ii'
+	\	},
+	\	'try': {
+	\		'pattern': ['^\s*\(Catch\|Finally\|Try\)\r\?\n', '^\s*\(Catch\|Finally\|End Try\)'],
+	\		'select-a': 'aT',
+	\		'select-i': 'iT'
+	\	},
+	\	'loop': {
+	\		'pattern': ['^\s*\(For\s\+Each\|For\).*\r\?\n', '^\s*Next'],
+	\		'select-a': 'al',
+	\		'select-i': 'il'
+	\	},
+	\})
+catch
+endtry
+
 setlocal et
 setlocal cinkeys-=0#
 setlocal indentkeys-=0#
